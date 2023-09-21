@@ -1,0 +1,38 @@
+name: "ZH-VN"
+on:
+  push:
+    paths:
+      - 'VH-GA/**'
+      - 'VH-KE/**'
+      - 'VH-PT/**'
+      - 'VH-ZH/**'
+      - '.github/workflows/Main.yml'
+      - '.github/Install.sh'
+      - 'Version.md'
+jobs:
+  build:
+    name: 'Build Zip...'
+    if: github.repository == 'kakathic/ZH-VN' && github.ref == 'refs/heads/ZH'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Process
+        run: |
+          # kakathic
+          export VA="$(grep -m1 Version: $GITHUB_WORKSPACE/Version.md | awk '{print $2}')"
+          echo "VS=$VA" >> $GITHUB_ENV
+          bash .github/Install.sh
+      - name: Upload
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Tool
+          tag_name: Package
+          files: Up/*
+          prerelease: true
+      - name: Upload VH
+        uses: softprops/action-gh-release@v1
+        with:
+          name: MS-VH ${{ env.VS }}
+          tag_name: MS-${{ env.VS }}
+          files: Zip/*
+          prerelease: true
